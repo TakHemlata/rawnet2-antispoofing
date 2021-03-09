@@ -1,5 +1,7 @@
-# rawnet2-antispoofing
-This repository contains implementation to reproduce our paper "End-to-end anti-spoofing with RawNet2" (https://arxiv.org/abs/2011.01108) accepted for publication at ICASSP 2021.
+End-to-end anti-spoofing with RawNet2
+===============
+This repository contains our implementation of the paper accepted to ICASSP 2021, "End-to-end anti-spoofing with RawNet2". This work demonstrates the effectivness of end-to-end approaches that utilise automatic feature learning to improve performance, both for seen spoofing attack types as well as for worst-case (A17) unseen attack.
+[Paper link here](https://arxiv.org/abs/2011.01108)
 
 ## Usage
 First, clone the repository locally:
@@ -36,7 +38,17 @@ To evaluate a pre-trained RawNet2 on asvspoof evaluation dataset:
 ```
 python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --model_path='S3_system_model.pth' --eval_output='Eval_scores_file.txt'
 ```
-We provide RawNet2 pretrained models on ASVspoof 2019 logical access (LA) database. Pre_trained weights are avaiable in "pre_trained_models/"  directory.
+We provide RawNet2 models pretrained on ASVspoof 2019 logical access (LA) database. 
+| Systems | EER (%) | min t-DCF | 
+| --- | --- | --- | 
+| L | 3.50 |0.0904  | 
+| S1 | 4.52 | 0.1059 | 
+| S2 | 4.99 | 0.1204 |
+| S3 |4.62  |0.1125  | 
+L: High-spectral-resolution LFCC baseline (https://www.isca-speech.org/archive/Interspeech_2020/pdfs/1844.pdf)
+
+
+Pre_trained weights are avaiable in "pre_trained_models/"  directory.
 1. S1_system_model: fixed Mel-scaled sinc filters
 2. S2_system_model: fixed inverse-mel-scaled sinc filters
 3. S3_system_model: fixed linear-scaled sinc filters
@@ -64,3 +76,5 @@ If you use this code for a paper please cite:
   year={2020}
 }
 ```
+
+
