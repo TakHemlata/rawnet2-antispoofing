@@ -39,12 +39,15 @@ To evaluate a pre-trained RawNet2 on asvspoof evaluation dataset:
 python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --model_path='S3_system_model.pth' --eval_output='Eval_scores_file.txt'
 ```
 We provide RawNet2 models pretrained on ASVspoof 2019 logical access (LA) database. 
+
 | Systems | EER (%) | min t-DCF | 
 | --- | --- | --- | 
 | L | 3.50 |0.0904  | 
 | S1 | 4.52 | 0.1059 | 
 | S2 | 4.99 | 0.1204 |
 | S3 |4.62  |0.1125  | 
+
+
 L: High-spectral-resolution LFCC baseline (https://www.isca-speech.org/archive/Interspeech_2020/pdfs/1844.pdf)
 
 
