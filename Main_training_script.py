@@ -18,19 +18,16 @@ from tensorboardX import SummaryWriter
 def keras_lr_decay(step, decay = 0.0001):
 	return 1./(1.+decay*step)
 
-def pad(X,max_len=64600):
-    X=Tensor(X)
-    X=X.view(1,X.shape[0])
-    nb_time = X.shape[1]
-    if nb_time >max_len:
-        start_idx = np.random.randint(low = 0, high = nb_time - max_len)
-        X = X[:, start_idx : start_idx + max_len][0]
-    elif nb_time < max_len:
-        nb_dup = int(max_len / nb_time) + 1
-        X = np.tile(X, (1, nb_dup))[:, :max_len][0]
-        X=Tensor(X)
+def pad(x, max_len=64600):
     
-    return X
+    x_len = x.shape[0]
+    if x_len >= max_len:
+        return x[:max_len]
+    # pad
+    num_repeats = (max_len / x_len)+1
+    x_repeat = np.repeat(x, num_repeats)
+    padded_x = x_repeat[:max_len]
+    return padded_x
 
 def init_weights(m):
     #print(m)
@@ -183,6 +180,7 @@ if __name__ == '__main__':
     transforms = transforms.Compose([
         
         lambda x: pad(x),
+        lambda x: Tensor(x)
         
     ])
 
@@ -214,7 +212,7 @@ if __name__ == '__main__':
     print('nb_params: {}'.format(nb_params))
     
     if args.model_path:
-        model.load_state_dict(torch.load(args.model_path))
+        model.load_state_dict(torch.load(args.model_path,map_location=device))
         print('Model loaded : {}'.format(args.model_path))
 
     
