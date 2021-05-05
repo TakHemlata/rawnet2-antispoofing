@@ -7,8 +7,8 @@ import numpy as np
 from joblib import Parallel, delayed
 
 
-LOGICAL_DATA_ROOT = '/database/ASVspoof2019_LA_cm_protocols/'    # change with path to your database protocols directory
-PHISYCAL_DATA_ROOT = 'database/ASVspoof2019_PA_cm_protocols'
+LOGICAL_DATA_ROOT = '../database/ASVspoof2019_LA_cm_protocols/'    # change with path to your database protocols directory
+PHISYCAL_DATA_ROOT = '../database/ASVspoof2019_PA_cm_protocols/'
 
 ASVFile = collections.namedtuple('ASVFile',
     ['speaker_id', 'file_name', 'path', 'sys_id', 'key'])
@@ -71,7 +71,8 @@ class ASVDataset(Dataset):
              
           
         }
-        self.data_root1='/database/'    # Change with your asvspoof database waveforms directory
+
+        self.data_root_dir='/your/database/directory/to/LA/'   # Change this to user's full directory address of LA database, please note that only add path till LA and the remaining train, dev and eval sub folders names are defining in the code.
         self.is_eval = is_eval
         self.sysid_dict_inv = {v:k for k,v in self.sysid_dict.items()}
         print('sysid_dict_inv',self.sysid_dict_inv)
@@ -88,7 +89,7 @@ class ASVDataset(Dataset):
         self.protocols_dir = os.path.join(self.data_root)
         print('protocols_dir',self.protocols_dir)
         
-        self.files_dir = os.path.join(self.data_root1, '{}_{}'.format(
+        self.files_dir = os.path.join(self.data_root_dir, '{}_{}'.format(
             self.prefix, self.dset_name ), 'flac')
         print('files_dir',self.files_dir)
         self.protocols_fname = os.path.join(self.protocols_dir,

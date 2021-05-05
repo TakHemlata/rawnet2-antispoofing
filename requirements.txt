@@ -1,6 +1,4 @@
 #cuda==10.1
-#pytorch==1.5.1 
-#torchvision==0.6.1
 pyyaml==5.4.1
 SoundFile
 joblib

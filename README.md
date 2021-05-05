@@ -14,7 +14,7 @@ Then, to create an environment:
 $ conda create --name rawnet_anti_spoofing python=3.8.5
 $ conda activate rawnet_anti_spoofing
 ```
-Install PyTorch 1.5.1 and torchvision 0.6.1
+Install PyTorch and torchvision 
 ```
 $ conda install -c pytorch pytorch torchvision
 $ pip install -r requirements.txt
@@ -26,6 +26,13 @@ $ pip install -r requirements.txt
 The ASVSpoof2019  dataset can be downloaded from the following link:
 
 [ASVSpoof2019 dataset](https://datashare.is.ed.ac.uk/handle/10283/3336)
+
+## Define your own LA database directory in the "data_utils_LA.py" script
+
+LOGICAL_DATA_ROOT  = change with path to user's LA database protocols directory address
+self.data_root_dir = change this to user's full directory address of LA database
+
+
 ### Training models
 To train RawNet2 run:
 ```
