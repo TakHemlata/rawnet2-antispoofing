@@ -1,8 +1,8 @@
 #cuda==10.1
-#python==3.8.5
 #pytorch==1.5.1 
 #torchvision==0.6.1
 pyyaml==5.4.1
 SoundFile
+joblib
 tensorboardX==2.1
 matplotlib==3.2.2
