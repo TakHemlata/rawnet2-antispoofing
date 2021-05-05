@@ -29,8 +29,8 @@ The ASVSpoof2019  dataset can be downloaded from the following link:
 
 ## Define your own LA database directory in the "data_utils_LA.py" script
 
-LOGICAL_DATA_ROOT  = change with path to user's LA database protocols directory address
-self.data_root_dir = change this to user's full directory address of LA database
+1. LOGICAL_DATA_ROOT  = change with path to user's LA database protocols directory address
+2. self.data_root_dir = change this to user's full directory address of LA database
 
 
 ### Training models
