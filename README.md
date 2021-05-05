@@ -17,7 +17,7 @@ $ conda activate rawnet_anti_spoofing
 Install PyTorch 1.5.1 and torchvision 0.6.1
 ```
 $ conda install -c pytorch pytorch torchvision
-$ pip install PyYAML == 5.4.1
+$ pip install -r requirements.txt
 ```
 
 
@@ -38,20 +38,10 @@ To evaluate a pre-trained RawNet2 on asvspoof evaluation dataset:
 ```
 python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --model_path='S3_system_model.pth' --eval_output='Eval_scores_file.txt'
 ```
-We provide RawNet2 models pretrained on ASVspoof 2019 logical access (LA) database. 
-
-| Systems | EER (%) | min t-DCF | 
-| --- | --- | --- | 
-| L | 3.50 |0.0904  | 
-| S1 | 4.52 | 0.1059 | 
-| S2 | 4.99 | 0.1204 |
-| S3 |4.62  |0.1125  | 
-
-
 L: High-spectral-resolution LFCC baseline (https://www.isca-speech.org/archive/Interspeech_2020/pdfs/1844.pdf)
 
 
-Pre_trained weights are avaiable in "pre_trained_models/"  directory.
+Pre_trained weights are avaiable in 'pre_trained_models/'  directory.
 1. S1_system_model: fixed Mel-scaled sinc filters
 2. S2_system_model: fixed inverse-mel-scaled sinc filters
 3. S3_system_model: fixed linear-scaled sinc filters
@@ -64,7 +54,7 @@ python evaluate_tDCF_asvspoof19_eval_LA.py
 ## Fusion
 Performed fusion experoiments using the "support vector machine (SVM)"  based fusion approach. We trained SVM on development scores of all RawNet2 systaems along with LFCC-GMM baseline and test on evaluation scores.
 
-SVM fusion script (matlab) is avaiable in "SVM_fusion/" directory with development and evaluation scores and coressponding labels of all countermeasures system in "S_dev.mat" and "S_eval.mat" respectively.
+SVM fusion script (matlab) is avaiable in 'SVM_fusion/' directory with development and evaluation scores and coressponding labels of all countermeasures system in 'S_dev.mat' and 'S_eval.mat' respectively.
 
 ## Contact
 For any query, please contact:

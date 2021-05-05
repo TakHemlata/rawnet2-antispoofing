@@ -23,11 +23,11 @@ def pad(x, max_len=64600):
     x_len = x.shape[0]
     if x_len >= max_len:
         return x[:max_len]
-    # pad
-    num_repeats = (max_len / x_len)+1
-    x_repeat = np.repeat(x, num_repeats)
-    padded_x = x_repeat[:max_len]
-    return padded_x
+    # need to pad
+    num_repeats = int(max_len / x_len)+1
+    padded_x = np.tile(x, (1, num_repeats))[:, :max_len][0]
+    
+    return padded_x 
 
 def init_weights(m):
     #print(m)
@@ -76,7 +76,7 @@ def produce_evaluation_file(dataset, model, device, save_path):
         batch_x = batch_x.to(device)
         batch_y = batch_y.view(-1).type(torch.int64).to(device)
         batch_out = model(batch_x,batch_y)
-        batch_score = (batch_out[:, 1] - batch_out[:, 0]
+        batch_score = (batch_out[:, 1]
                        ).data.cpu().numpy().ravel()
 
         # add outputs
@@ -141,7 +141,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--eval_output', type=str, default=None,
                         help='Path to save the evaluation result')
-    parser.add_argument('--batch_size', type=int, default=16)
+    parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--num_epochs', type=int, default=100)
     parser.add_argument('--lr', type=float, default=0.0001)
     parser.add_argument('--weight_decay', type=float, default=0.0001)
@@ -152,6 +152,7 @@ if __name__ == '__main__':
     parser.add_argument('--is_eval', action='store_true', default=False)
     parser.add_argument('--eval_part', type=int, default=0)
     parser.add_argument('--loss', type=str, default='CCE')
+    
 
     dir_yaml = os.path.splitext('train_RawNet')[0] + '.yaml'
 
@@ -185,9 +186,14 @@ if __name__ == '__main__':
     ])
 
     # GPU device
-    device = torch.device('cuda',1) if torch.cuda.is_available() else 'cpu'   # cuda-1
-    #device = 'cuda' if torch.cuda.is_available() else 'cpu'                  # cuda-0
+    #device = torch.device('cuda',1) if torch.cuda.is_available() else 'cpu'   # cuda-1
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'                  # cuda-0
     
+    # Dataloader
+    train_set = data_utils_LA.ASVDataset(is_train=True, is_logical=is_logical, transform=transforms,
+                                      feature_name=args.features)
+    train_loader = DataLoader(
+        train_set, batch_size=args.batch_size, shuffle=True)
 
     # Dataloader
     dev_set = data_utils_LA.ASVDataset(is_train=False, is_logical=is_logical,
@@ -218,17 +224,12 @@ if __name__ == '__main__':
     
 
     if args.eval:
-        assert args.eval_output is not None, 'You must provide an output path'
-        assert args.model_path is not None, 'You must provide model checkpoint'
+        
         produce_evaluation_file(dev_set, model, device, args.eval_output)
         sys.exit(0)
 
 
-    # Dataloader
-    train_set = data_utils_LA.ASVDataset(is_train=True, is_logical=is_logical, transform=transforms,
-                                      feature_name=args.features)
-    train_loader = DataLoader(
-        train_set, batch_size=args.batch_size, shuffle=True)
+    
 
     # Training and validation 
     num_epochs = args.num_epochs

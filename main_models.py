@@ -12,7 +12,7 @@ import random
 
 
 
-class LayerNorm(nn.Module):
+'''class LayerNorm(nn.Module):
 
     def __init__(self, features, eps=1e-6):
         super(LayerNorm,self).__init__()
@@ -23,7 +23,7 @@ class LayerNorm(nn.Module):
     def forward(self, x):
         mean = x.mean(-1, keepdim=True)
         std = x.std(-1, keepdim=True)
-        return self.gamma * (x - mean) / (std + self.eps) + self.beta
+        return self.gamma * (x - mean) / (std + self.eps) + self.beta'''
 
 
 class CONV(nn.Module):
@@ -53,8 +53,9 @@ class CONV(nn.Module):
         self.device=device
         
         
-        # fixed Sinc filters initialize using linear frequency scale. for mel-frequency scale load "Sinc_filters_mel.pkl" and inverse-mel frequency scale use "Sinc_inverse_mel.pkl".
-        with open('Fixed_Sinc_filters_weight/Sinc_filters_linear.pkl', 'rb') as fin :
+        '''fixed Sinc filters initialize (fixed cut-off frequency of sinc filters) using Mel-frequency scale. for linear-frequency scale load "Sinc_filters_linear.pkl" and inverse-mel frequency scale use "Sinc_inverse_mel.pkl". These files are generated  with matlab code mentioned in "Fixed_Sinc_filters_weight" folder.'''
+
+        with open('Fixed_Sinc_filters_weight/Sinc_filters_mel.pkl', 'rb') as fin :
            y = pickle.load(fin)
         self.y=y
         
@@ -69,6 +70,9 @@ class CONV(nn.Module):
         return F.conv1d(x, self.filters, stride=self.stride,
                         padding=self.padding, dilation=self.dilation,
                          bias=None, groups=1)
+
+
+'''In this paper we didn't use SincConv_fast function. We used CONV(nn.Module) function to extract sinc filters. If you want to use SincConv_fast() without learning cut-off frequencies then remove gradient computation for both "self.low_hz_" and "self.band_hz_" to make it fixed.'''
 
 class SincConv_fast(nn.Module):
     """Sinc-based convolution
@@ -207,7 +211,7 @@ class Residual_block(nn.Module):
         
         if not self.first:
             self.bn1 = nn.BatchNorm1d(num_features = nb_filts[0])
-        self.lrelu = nn.SELU(inplace=True)
+        
         self.lrelu_keras = nn.LeakyReLU(negative_slope=0.3)
         
         self.conv1 = nn.Conv1d(in_channels = nb_filts[0],
@@ -275,8 +279,9 @@ class RawNet(nn.Module):
 			kernel_size = d_args['first_conv'])
         self.first_bn = nn.BatchNorm1d(num_features = d_args['filts'][0])
         
+        
         self.lrelu = nn.SELU(inplace=True)
-        self.lrelu_keras = nn.SELU(inplace=True)
+        self.lrelu_keras = nn.SELU(inplace=True) 
         
         self.block0 = nn.Sequential(Residual_block(nb_filts = d_args['filts'][1], first = True))
         self.block1 = nn.Sequential(Residual_block(nb_filts = d_args['filts'][1]))
@@ -320,12 +325,12 @@ class RawNet(nn.Module):
         
     def forward(self, x, y = None):
         
-        #follow sincNet recipe
+        
         nb_samp = x.shape[0]
         len_seq = x.shape[1]
         x=x.view(nb_samp,1,len_seq)
         
-        x=self.conv_time(x)    # Fixed sinc filters convolution
+        x = self.conv_time(x)    # Fixed sinc filters convolution
         x = F.max_pool1d(torch.abs(x), 3)
         x = self.first_bn(x)
         x = self.lrelu_keras(x)

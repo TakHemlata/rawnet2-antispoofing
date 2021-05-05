@@ -28,7 +28,7 @@ spoofIdx_eval = find(eval_labels==0);
 
 %% SVM fusion
 
-% We train SVM on development scores generated (from all 4 systems) and
+% train SVM on development scores generated (from all 4 systems) and
 % test on evalution scores
 
 SVMModel = fitcsvm(S_dev',dev_labels','KernelFunction','linear','KernelScale','auto','Standardize',true);

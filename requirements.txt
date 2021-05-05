@@ -1,7 +1,7 @@
-cuda==10.1
-python==3.8.5
-pytorch==1.5.1 
-torchvision==0.6.1
+#cuda==10.1
+#python==3.8.5
+#pytorch==1.5.1 
+#torchvision==0.6.1
 pyyaml==5.4.1
 soundfile==0.10.3
 tensorboardX==2.1
