@@ -43,7 +43,7 @@ python Main_training_script.py --track=logical --loss=CCE   --lr=0.0001 --batch_
 To evaluate a pre-trained RawNet2 on asvspoof evaluation dataset:
 
 ```
-python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --model_path='S3_system_model.pth' --eval_output='Eval_scores_file.txt'
+python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --model_path='S1_system_model.pth' --eval_output='Eval_scores_file.txt'
 ```
 L: High-spectral-resolution LFCC baseline (https://www.isca-speech.org/archive/Interspeech_2020/pdfs/1844.pdf)
 
