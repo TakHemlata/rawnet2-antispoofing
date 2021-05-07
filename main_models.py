@@ -53,7 +53,7 @@ class CONV(nn.Module):
         self.device=device
         
         
-        '''fixed Sinc filters initialize (fixed cut-off frequency of sinc filters) using Mel-frequency scale. for linear-frequency scale load "Sinc_filters_linear.pkl" and inverse-mel frequency scale use "Sinc_inverse_mel.pkl". These files are generated  with matlab code mentioned in "Fixed_Sinc_filters_weight" folder.'''
+        '''Sinc filters initialize (fixed (not learnable) cut-off frequencies) '''
 
         with open('Fixed_Sinc_filters_weight/Sinc_filters_mel.pkl', 'rb') as fin :
            y = pickle.load(fin)
