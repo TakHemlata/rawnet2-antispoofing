@@ -4,7 +4,7 @@ import eval_metrics as em
 import matplotlib.pyplot as plt
 
 # Replace CM scores with your own scores or provide score file as the first argument.
-cm_scores_file =  'Eval_scores_file.txt'
+cm_scores_file =  'Eval_CM_scores_file.txt'
 # Replace ASV scores with organizers' scores or provide score file as the second argument.
 asv_score_file = '/tDCF_python/ASV_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt'
 

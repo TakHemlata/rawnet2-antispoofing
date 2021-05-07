@@ -1,13 +1,10 @@
-
-
-
 import sys
 import numpy as np
 import eval_metrics as em
 import matplotlib.pyplot as plt
 
 # Replace CM scores with your own scores or provide score file as the first argument.
-cm_score_file =  'Dev_scores_file.txt' #'scores/cm_dev.txt'
+cm_score_file =  'Dev_CM_scores_file.txt' #'scores/cm_dev.txt'
 # Replace ASV scores with organizers' scores or provide score file as the second argument.
 asv_score_file = '/ASV_scores/ASVspoof2019.LA.asv.dev.gi.trl.scores.txt'
 
