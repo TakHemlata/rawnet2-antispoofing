@@ -72,7 +72,7 @@ class CONV(nn.Module):
                          bias=None, groups=1)
 
 
-'''In this paper we didn't use SincConv_fast function. We used CONV(nn.Module) function to extract sinc filters. If you want to use SincConv_fast() without learning cut-off frequencies then remove gradient computation for both "self.low_hz_" and "self.band_hz_" to make it fixed.'''
+'''In this paper we didn't use SincConv_fast() function. We used CONV() function to extract sinc filters. If you want to use SincConv_fast() without learning cut-off frequencies then remove gradient computation for both "self.low_hz_" and "self.band_hz_" to make it fixed.'''
 
 class SincConv_fast(nn.Module):
     """Sinc-based convolution
@@ -105,7 +105,7 @@ class SincConv_fast(nn.Module):
         return 700 * (10 ** (mel / 2595) - 1)
 
     def __init__(self, out_channels, kernel_size, sample_rate=16000, in_channels=1,
-                 stride=1, padding=0, dilation=1, bias=False, groups=1, min_low_hz=50, min_band_hz=50):
+                 stride=1, padding=0, dilation=1, bias=False, groups=1, min_low_hz=50, min_band_hz=50,trainable=False):
 
         super(SincConv_fast,self).__init__()
 
@@ -117,7 +117,7 @@ class SincConv_fast(nn.Module):
 
         self.out_channels = out_channels
         self.kernel_size = kernel_size
-        
+        self.trainable   = trainable:
         # Forcing the filters to be odd (i.e, perfectly symmetrics)
         if kernel_size%2==0:
             self.kernel_size=self.kernel_size+1
@@ -143,13 +143,20 @@ class SincConv_fast(nn.Module):
                           self.to_mel(high_hz),
                           self.out_channels + 1)
         hz = self.to_hz(mel)
+
         
+        # Sinc filter frequency make it fixed/ learnable based on  self.trainable argument
+        if self.trainable==True:
+            # filter lower frequency (out_channels, 1)
+            self.low_hz_ = nn.Parameter(torch.Tensor(hz[:-1]).view(-1, 1),requires_grad=True)
+            # filter frequency band (out_channels, 1)
+            self.band_hz_ = nn.Parameter(torch.Tensor(np.diff(hz)).view(-1, 1),requires_grad=True)
+        else:
+            # filter lower frequency (out_channels, 1)
+            self.low_hz_ = nn.Parameter(torch.Tensor(hz[:-1]).view(-1, 1),requires_grad=False)
+            # filter frequency band (out_channels, 1)
+            self.band_hz_ = nn.Parameter(torch.Tensor(np.diff(hz)).view(-1, 1),requires_grad=False)
 
-        # filter lower frequency (out_channels, 1)
-        self.low_hz_ = nn.Parameter(torch.Tensor(hz[:-1]).view(-1, 1))
-
-        # filter frequency band (out_channels, 1)
-        self.band_hz_ = nn.Parameter(torch.Tensor(np.diff(hz)).view(-1, 1))
 
         # Hamming window
         #self.window_ = torch.hamming_window(self.kernel_size)
@@ -269,23 +276,18 @@ class RawNet(nn.Module):
 
         
         self.device=device
+
         self.first_conv = SincConv_fast(in_channels = d_args['in_channels'],
 			out_channels = d_args['filts'][0],#128
-			kernel_size = d_args['first_conv']
+			kernel_size = d_args['first_conv'],trainable=False
         )
-        
         self.conv_time=CONV(device=device,in_channels = d_args['in_channels'],
 			out_channels = d_args['filts'][0],
 			kernel_size = d_args['first_conv'])
         self.first_bn = nn.BatchNorm1d(num_features = d_args['filts'][0])
-        
-        
-        self.lrelu = nn.SELU(inplace=True)
-        self.lrelu_keras = nn.SELU(inplace=True) 
-        
+        self.selu_keras = nn.SELU(inplace=True) 
         self.block0 = nn.Sequential(Residual_block(nb_filts = d_args['filts'][1], first = True))
         self.block1 = nn.Sequential(Residual_block(nb_filts = d_args['filts'][1]))
- 
         self.block2 = nn.Sequential(Residual_block(nb_filts = d_args['filts'][2]))
         d_args['filts'][2][0] = d_args['filts'][2][1]
         self.block3 = nn.Sequential(Residual_block(nb_filts = d_args['filts'][2]))
@@ -333,7 +335,7 @@ class RawNet(nn.Module):
         x = self.conv_time(x)    # Fixed sinc filters convolution
         x = F.max_pool1d(torch.abs(x), 3)
         x = self.first_bn(x)
-        x = self.lrelu_keras(x)
+        x =  self.selu_keras(x)
         
         x0 = self.block0(x)
         y0 = self.avgpool(x0).view(x0.size(0), -1) # torch.Size([batch, filter])
@@ -373,7 +375,7 @@ class RawNet(nn.Module):
         x = x5 * y5 + y5 # (batch, filter, time) x (batch, filter, 1)
 
         x = self.bn_before_gru(x)
-        x = self.lrelu_keras(x)
+        x = self.selu_keras(x)
         x = x.permute(0, 2, 1)     #(batch, filt, time) >> (batch, time, filt)
         self.gru.flatten_parameters()
         x, _ = self.gru(x)
