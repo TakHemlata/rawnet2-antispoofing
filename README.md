@@ -40,7 +40,7 @@ python Main_training_script.py --track=logical --loss=CCE   --lr=0.0001 --batch_
 ```
 
 ## Evaluation
-To evaluate a pre-trained RawNet2 on asvspoof evaluation dataset:
+To evaluate a pre-trained RawNet2 on asvspoof 2019 LA evaluation dataset:
 
 ```
 python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --model_path='S1_system_model.pth' --eval_output='Eval_scores_file.txt'
@@ -58,7 +58,7 @@ python evaluate_tDCF_asvspoof19_eval_LA.py
 ``` 
 
 ## Fusion
-Fusion experiments performed using the "Support Vector Machine (SVM)"  based fusion approach. We trained SVM on development scores of all three RawNet2 systems  with high-spectral resolution LFCC-GMM baseline system (https://www.isca-speech.org/archive/Interspeech_2020/pdfs/1844.pdf) and tested on evaluation scores of all the systems.
+Fusion experiments performed using the "Support Vector Machine (SVM)"  based fusion approach. We trained SVM on development scores of all three RawNet2 systems with high-spectral resolution LFCC-GMM baseline system (https://www.isca-speech.org/archive/Interspeech_2020/pdfs/1844.pdf) and tested on evaluation scores of all the systems.
 
 SVM fusion script (matlab) is available in 'SVM_fusion/' directory with development and evaluation scores and coressponding labels of all countermeasure systems in 'S_dev.mat' and 'S_eval.mat' respectively.
 
