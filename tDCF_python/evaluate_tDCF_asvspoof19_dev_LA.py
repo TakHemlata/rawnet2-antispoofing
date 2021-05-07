@@ -7,7 +7,7 @@ import eval_metrics as em
 import matplotlib.pyplot as plt
 
 # Replace CM scores with your own scores or provide score file as the first argument.
-cm_score_file =  '' #'scores/cm_dev.txt'
+cm_score_file =  'Dev_scores_file.txt' #'scores/cm_dev.txt'
 # Replace ASV scores with organizers' scores or provide score file as the second argument.
 asv_score_file = '/ASV_scores/ASVspoof2019.LA.asv.dev.gi.trl.scores.txt'
 
@@ -58,20 +58,6 @@ spoof_cm = cm_scores[cm_keys == 'spoof']
 eer_asv, asv_threshold = em.compute_eer(tar_asv, non_asv)
 eer_cm = em.compute_eer(bona_cm, spoof_cm)[0]
 
-spoof_cm_A01    = cm_scores[cm_sources == 'A01']
-spoof_cm_A02    = cm_scores[cm_sources == 'A02']
-spoof_cm_A03    = cm_scores[cm_sources == 'A03']
-spoof_cm_A04    = cm_scores[cm_sources == 'A04']
-spoof_cm_A05    = cm_scores[cm_sources == 'A05']
-spoof_cm_A06    = cm_scores[cm_sources == 'A06']
-
-eer_cm_A01 = em.compute_eer(bona_cm, spoof_cm_A01)[0]
-eer_cm_A02 = em.compute_eer(bona_cm, spoof_cm_A02)[0]
-eer_cm_A03 = em.compute_eer(bona_cm, spoof_cm_A03)[0]
-eer_cm_A04 = em.compute_eer(bona_cm, spoof_cm_A04)[0]
-eer_cm_A05 = em.compute_eer(bona_cm, spoof_cm_A05)[0]
-eer_cm_A06 = em.compute_eer(bona_cm, spoof_cm_A06)[0]
-
 [Pfa_asv, Pmiss_asv, Pmiss_spoof_asv] = em.obtain_asv_error_rates(tar_asv, non_asv, spoof_asv, asv_threshold)
 
 
@@ -96,13 +82,6 @@ print('\nTANDEM')
 print('   min-tDCF       = {:8.9f}'.format(min_tDCF))
 
 
-print('BREAKDOWN CM SYSTEM')
-print('   EER A01          = {:8.9f} % (Equal error rate for A01)'.format(eer_cm_A01 * 100))
-print('   EER A02          = {:8.9f} % (Equal error rate for A02)'.format(eer_cm_A02 * 100))
-print('   EER A03          = {:8.9f} % (Equal error rate for A03)'.format(eer_cm_A03 * 100))
-print('   EER A04          = {:8.9f} % (Equal error rate for A04)'.format(eer_cm_A04 * 100))
-print('   EER A05          = {:8.9f} % (Equal error rate for A05)'.format(eer_cm_A05 * 100))
-print('   EER A06          = {:8.9f} % (Equal error rate for A06)'.format(eer_cm_A06 * 100))
 
 # Visualize ASV scores and CM scores
 plt.figure()

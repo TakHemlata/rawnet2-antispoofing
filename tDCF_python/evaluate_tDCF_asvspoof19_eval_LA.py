@@ -55,33 +55,6 @@ spoof_cm = cm_scores[cm_keys == 'spoof']
 eer_asv, asv_threshold = em.compute_eer(tar_asv, non_asv)
 eer_cm = em.compute_eer(bona_cm, spoof_cm)[0]
 
-spoof_cm_A07    = cm_scores[cm_sources == 'A07']
-spoof_cm_A08    = cm_scores[cm_sources == 'A08']
-spoof_cm_A09    = cm_scores[cm_sources == 'A09']
-spoof_cm_A10    = cm_scores[cm_sources == 'A10']
-spoof_cm_A11    = cm_scores[cm_sources == 'A11']
-spoof_cm_A12    = cm_scores[cm_sources == 'A12']
-spoof_cm_A13    = cm_scores[cm_sources == 'A13']
-spoof_cm_A14    = cm_scores[cm_sources == 'A14']
-spoof_cm_A15    = cm_scores[cm_sources == 'A15']
-spoof_cm_A16    = cm_scores[cm_sources == 'A16']
-spoof_cm_A17    = cm_scores[cm_sources == 'A17']
-spoof_cm_A18    = cm_scores[cm_sources == 'A18']
-spoof_cm_A19    = cm_scores[cm_sources == 'A19']
-    
-eer_cm_A07 = em.compute_eer(bona_cm, spoof_cm_A07)[0]
-eer_cm_A08 = em.compute_eer(bona_cm, spoof_cm_A08)[0]
-eer_cm_A09 = em.compute_eer(bona_cm, spoof_cm_A09)[0]
-eer_cm_A10 = em.compute_eer(bona_cm, spoof_cm_A10)[0]
-eer_cm_A11 = em.compute_eer(bona_cm, spoof_cm_A11)[0]
-eer_cm_A12 = em.compute_eer(bona_cm, spoof_cm_A12)[0]
-eer_cm_A13 = em.compute_eer(bona_cm, spoof_cm_A13)[0]
-eer_cm_A14 = em.compute_eer(bona_cm, spoof_cm_A14)[0]
-eer_cm_A15 = em.compute_eer(bona_cm, spoof_cm_A15)[0]
-eer_cm_A16 = em.compute_eer(bona_cm, spoof_cm_A16)[0]
-eer_cm_A17 = em.compute_eer(bona_cm, spoof_cm_A17)[0]
-eer_cm_A18 = em.compute_eer(bona_cm, spoof_cm_A18)[0]
-eer_cm_A19 = em.compute_eer(bona_cm, spoof_cm_A19)[0]
 
 [Pfa_asv, Pmiss_asv, Pmiss_spoof_asv] = em.obtain_asv_error_rates(tar_asv, non_asv, spoof_asv, asv_threshold)
 
@@ -106,20 +79,6 @@ print('   EER            = {:8.9f} % (Equal error rate for countermeasure)'.form
 print('\nTANDEM')
 print('   min-tDCF       = {:8.9f}'.format(min_tDCF))
 
-print('BREAKDOWN CM SYSTEM')
-print('   EER A07          = {:8.9f} % (Equal error rate for A07)'.format(eer_cm_A07 * 100))
-print('   EER A08          = {:8.9f} % (Equal error rate for A08)'.format(eer_cm_A08 * 100))
-print('   EER A09          = {:8.9f} % (Equal error rate for A09)'.format(eer_cm_A09 * 100))
-print('   EER A10          = {:8.9f} % (Equal error rate for A10)'.format(eer_cm_A10 * 100))
-print('   EER A11          = {:8.9f} % (Equal error rate for A11)'.format(eer_cm_A11 * 100))
-print('   EER A12          = {:8.9f} % (Equal error rate for A12)'.format(eer_cm_A12 * 100))
-print('   EER A13          = {:8.9f} % (Equal error rate for A13)'.format(eer_cm_A13 * 100))
-print('   EER A14          = {:8.9f} % (Equal error rate for A14)'.format(eer_cm_A14 * 100))
-print('   EER A15          = {:8.9f} % (Equal error rate for A15)'.format(eer_cm_A15 * 100))
-print('   EER A16          = {:8.9f} % (Equal error rate for A16)'.format(eer_cm_A16 * 100))
-print('   EER A17          = {:8.9f} % (Equal error rate for A17)'.format(eer_cm_A17 * 100))
-print('   EER A18          = {:8.9f} % (Equal error rate for A18)'.format(eer_cm_A18 * 100))
-print('   EER A19          = {:8.9f} % (Equal error rate for A19)'.format(eer_cm_A19 * 100))
 
 
 # Visualize ASV scores and CM scores
