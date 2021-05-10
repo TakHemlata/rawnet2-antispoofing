@@ -249,7 +249,7 @@ if __name__ == '__main__':
         print('*'*50)
         print('dev_acc %f', valid_accuracy)
         if valid_accuracy > best_acc:
-            print('best model find at epoch', epoch)
+            print('best model found at epoch', epoch)
         print('*'*50)
         best_acc = max(valid_accuracy, best_acc)
         torch.save(model.state_dict(), os.path.join(model_save_path, 'epoch_{}.pth'.format(epoch)))
