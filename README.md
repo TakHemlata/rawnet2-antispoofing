@@ -43,7 +43,13 @@ python Main_training_script.py --track=logical --loss=CCE   --lr=0.0001 --batch_
 To evaluate a pre-trained RawNet2 on asvspoof 2019 LA evaluation dataset:
 
 ```
-python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --model_path='S1_system_model.pth' --eval_output='Eval_scores_file.txt'
+python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --model_path='S1_system_model.pth' --eval_output='Eval_CM_scores_file.txt'
+```
+
+To compute scores on development dataset:
+
+```
+python Main_training_script.py --track=logical --loss=CCE --eval --model_path='S1_system_model.pth' --eval_output='Dev_CM_scores_file.txt'
 ```
 
 Pre_trained weights are available in 'pre_trained_models/'  directory.

@@ -76,14 +76,14 @@ class ASVDataset(Dataset):
         self.is_eval = is_eval
         self.sysid_dict_inv = {v:k for k,v in self.sysid_dict.items()}
         print('sysid_dict_inv',self.sysid_dict_inv)
+
         self.data_root = data_root
         print('data_root',self.data_root)
 
         self.dset_name = 'eval' if is_eval else 'train' if is_train else 'dev'
-        #self.dset_name = 'dev' if is_eval else 'train' if is_train else 'eval'    # for eer on dev dataset
         print('dset_name',self.dset_name)
+
         self.protocols_fname = 'eval.trl' if is_eval else 'train.trn' if is_train else 'dev.trl'
-        #self.protocols_fname = 'dev.trl' if is_eval else 'train.trn' if is_train else 'eval.trl'  # for eer on dev set
         print('protocols_fname',self.protocols_fname)
         
         self.protocols_dir = os.path.join(self.data_root)
@@ -92,9 +92,11 @@ class ASVDataset(Dataset):
         self.files_dir = os.path.join(self.data_root_dir, '{}_{}'.format(
             self.prefix, self.dset_name ), 'flac')
         print('files_dir',self.files_dir)
+
         self.protocols_fname = os.path.join(self.protocols_dir,
             'ASVspoof2019.{}.cm.{}.txt'.format(track, self.protocols_fname))
-        
+        print('protocols_file',self.protocols_fname)
+
         self.cache_fname = 'cache_{}_{}_{}.npy'.format(self.dset_name,track,feature_name)
         print('cache_fname',self.cache_fname)
         
@@ -143,12 +145,12 @@ class ASVDataset(Dataset):
                 file_name=tokens[1],
                 path=os.path.join(self.files_dir, tokens[1] + '.flac'),
                 sys_id=self.sysid_dict[tokens[2]],
-                key=int(tokens[3] == 'human'))
+                key=int(tokens[3] == 'bonafide'))
         return ASVFile(speaker_id=tokens[0],
             file_name=tokens[1],
             path=os.path.join(self.files_dir, tokens[1] + '.flac'),
             sys_id=self.sysid_dict[tokens[2]],
-            key=int(tokens[3] == 'human'))
+            key=int(tokens[3] == 'bonafide'))
         
 
    

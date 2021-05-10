@@ -47,8 +47,8 @@ tar_asv = asv_scores[asv_keys == 'target']
 non_asv = asv_scores[asv_keys == 'nontarget']
 spoof_asv = asv_scores[asv_keys == 'spoof']
 
-# Extract bona fide (real human) and spoof scores from the CM scores
-bona_cm = cm_scores[cm_keys == 'human']
+# Extract bona fide (real bonafide) and spoof scores from the CM scores
+bona_cm = cm_scores[cm_keys == 'bonafide']
 spoof_cm = cm_scores[cm_keys == 'spoof']
 
 # EERs of the standalone systems and fix ASV operating point to EER threshold

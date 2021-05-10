@@ -82,7 +82,7 @@ def produce_evaluation_file(dataset, model, device, save_path):
         # add outputs
         fname_list.extend(list(batch_meta[1]))
         key_list.extend(
-          ['human' if key == 1 else 'spoof' for key in list(batch_meta[4])])
+          ['bonafide' if key == 1 else 'spoof' for key in list(batch_meta[4])])
         sys_id_list.extend([dataset.sysid_dict_inv[s.item()]
                             for s in list(batch_meta[3])])
         score_list.extend(batch_score.tolist())
@@ -189,11 +189,7 @@ if __name__ == '__main__':
     #device = torch.device('cuda',1) if torch.cuda.is_available() else 'cpu'   # cuda-1
     device = 'cuda' if torch.cuda.is_available() else 'cpu'                  # cuda-0
     
-    # Dataloader
-    train_set = data_utils_LA.ASVDataset(is_train=True, is_logical=is_logical, transform=transforms,
-                                      feature_name=args.features)
-    train_loader = DataLoader(
-        train_set, batch_size=args.batch_size, shuffle=True)
+    
 
     # Dataloader
     dev_set = data_utils_LA.ASVDataset(is_train=False, is_logical=is_logical,
@@ -229,11 +225,16 @@ if __name__ == '__main__':
         sys.exit(0)
 
 
+    # Dataloader
+    train_set = data_utils_LA.ASVDataset(is_train=True, is_logical=is_logical, transform=transforms,
+                                      feature_name=args.features)
+    train_loader = DataLoader(
+        train_set, batch_size=args.batch_size, shuffle=True)
+
     
 
     # Training and validation 
-    num_epochs = args.num_epochs
-    writer = SummaryWriter('logs/{}'.format(model_tag))
+    best_acc = 99
     for epoch in range(num_epochs):
         running_loss, train_accuracy = train_epoch(train_loader,model, args.lr,optimizer, device)
         valid_accuracy = evaluate_accuracy(dev_loader, model, device)
@@ -242,4 +243,10 @@ if __name__ == '__main__':
         writer.add_scalar('loss', running_loss, epoch)
         print('\n{} - {} - {:.2f} - {:.2f}'.format(epoch,
                                                    running_loss, train_accuracy, valid_accuracy))
+        print('*'*50)
+        print('dev_acc %f', valid_accuracy)
+        if valid_accuracy > best_acc:
+            print('best model find at epoch', epoch)
+        print('*'*50)
+        best_acc = max(valid_accuracy, best_acc)
         torch.save(model.state_dict(), os.path.join(model_save_path, 'epoch_{}.pth'.format(epoch)))
