@@ -132,13 +132,14 @@ def train_epoch(data_loader, model, lr,optim, device):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser('Eurecom ASVSpoof2019  model')
+    parser = argparse.ArgumentParser('ASVSpoof2019  model')
     parser.add_argument('--eval', action='store_true', default=False,
                         help='eval mode')
     parser.add_argument('--model_path', type=str,
                         default=None, help='Model checkpoint')
    
-
+    parser.add_argument('--database_path', type=str, default='/medias/speech/projects/ASVspoofing/ASVspoof_2019/111_RELEASES/DATABASE/ASVspoof2019/LA/', help='change this to user\'s full directory address of LA database')
+    parser.add_argument('--protocols_path', type=str, default='../database/ASVspoof2019_LA_cm_protocols/', help='Change with path to user\'s LA database protocols directory address')
     parser.add_argument('--eval_output', type=str, default=None,
                         help='Path to save the evaluation result')
     parser.add_argument('--batch_size', type=int, default=32)
@@ -172,7 +173,7 @@ if __name__ == '__main__':
     if args.comment:
         model_tag = model_tag + '_{}'.format(args.comment)
     model_save_path = os.path.join('models', model_tag)
-    assert track in ['logical', 'physical'], 'Invalid track given'
+    
     is_logical = (track == 'logical')
     if not os.path.exists(model_save_path):
         os.mkdir(model_save_path)
@@ -192,7 +193,7 @@ if __name__ == '__main__':
     
 
     # Dataloader
-    dev_set = data_utils_LA.ASVDataset(is_train=False, is_logical=is_logical,
+    dev_set = data_utils_LA.ASVDataset(database_path=args.database_path,protocols_path=args.protocols_path,is_train=False, is_logical=is_logical,
                                     transform=transforms,
                                     feature_name=args.features, is_eval=args.is_eval, eval_part=args.eval_part)
     dev_loader = DataLoader(dev_set, batch_size=args.batch_size, shuffle=True)
@@ -226,7 +227,7 @@ if __name__ == '__main__':
 
 
     # Dataloader
-    train_set = data_utils_LA.ASVDataset(is_train=True, is_logical=is_logical, transform=transforms,
+    train_set = data_utils_LA.ASVDataset(database_path=args.database_path,protocols_path=args.protocols_path,is_train=True, is_logical=is_logical, transform=transforms,
                                       feature_name=args.features)
     train_loader = DataLoader(
         train_set, batch_size=args.batch_size, shuffle=True)
@@ -234,6 +235,8 @@ if __name__ == '__main__':
     
 
     # Training and validation 
+    num_epochs = args.num_epochs
+    writer = SummaryWriter('logs/{}'.format(model_tag))
     best_acc = 99
     for epoch in range(num_epochs):
         running_loss, train_accuracy = train_epoch(train_loader,model, args.lr,optimizer, device)

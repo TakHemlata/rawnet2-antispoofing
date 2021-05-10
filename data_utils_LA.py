@@ -7,24 +7,19 @@ import numpy as np
 from joblib import Parallel, delayed
 
 
-LOGICAL_DATA_ROOT = '../database/ASVspoof2019_LA_cm_protocols/'    # change with path to your database protocols directory
-PHISYCAL_DATA_ROOT = '../database/ASVspoof2019_PA_cm_protocols/'
-
 ASVFile = collections.namedtuple('ASVFile',
     ['speaker_id', 'file_name', 'path', 'sys_id', 'key'])
 
 class ASVDataset(Dataset):
     """ Utility class to load  train/dev datatsets """
-    def __init__(self, transform=None, 
+    def __init__(self, database_path=None,protocols_path=None,transform=None, 
         is_train=True, sample_size=None, 
         is_logical=True, feature_name=None, is_eval=False,
         eval_part=0):
         if is_logical:
-            data_root = LOGICAL_DATA_ROOT
+            data_root = protocols_path
             track = 'LA'
-        else:
-            data_root = PHISYCAL_DATA_ROOT
-            track = 'PA'
+        
         if is_eval:
             data_root = os.path.join('eval_data', data_root)
             
@@ -72,7 +67,7 @@ class ASVDataset(Dataset):
           
         }
 
-        self.data_root_dir='/your/database/directory/to/LA/'   # Change this to user's full directory address of LA database, please note that only add path till LA and the remaining train, dev and eval sub folders names are defining in the code.
+        self.data_root_dir=database_path   
         self.is_eval = is_eval
         self.sysid_dict_inv = {v:k for k,v in self.sysid_dict.items()}
         print('sysid_dict_inv',self.sysid_dict_inv)
