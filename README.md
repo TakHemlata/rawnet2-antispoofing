@@ -35,10 +35,17 @@ python Main_training_script.py --track=logical --loss=CCE   --lr=0.0001 --batch_
 ```
 
 ## Evaluation
-To evaluate a pre-trained RawNet2 on asvspoof 2019 LA evaluation dataset:
+
+To evaluate your own trained model on LA evaluation dataset:
 
 ```
-python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --model_path='S1_system_model.pth' --eval_output='Eval_CM_scores_file.txt'
+python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --model_path='path/to/your/best_model.pth' --eval_output='Eval_CM_scores_file.txt'
+```
+
+To evaluate a pre-trained RawNet2 on LA evaluation dataset:
+
+```
+python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --model_path='/pre_trained_models/S1_system_model.pth' --eval_output='Eval_CM_scores_file_for_pre_trained_model.txt'
 ```
 
 To compute scores on development dataset:

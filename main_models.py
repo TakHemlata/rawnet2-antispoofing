@@ -12,19 +12,6 @@ import random
 
 
 
-'''class LayerNorm(nn.Module):
-
-    def __init__(self, features, eps=1e-6):
-        super(LayerNorm,self).__init__()
-        self.gamma = nn.Parameter(torch.ones(features))
-        self.beta = nn.Parameter(torch.zeros(features))
-        self.eps = eps
-
-    def forward(self, x):
-        mean = x.mean(-1, keepdim=True)
-        std = x.std(-1, keepdim=True)
-        return self.gamma * (x - mean) / (std + self.eps) + self.beta'''
-
 
 class CONV(nn.Module):
     def __init__(self, out_channels, kernel_size,device, sample_rate=16000, in_channels=1,
@@ -117,7 +104,7 @@ class SincConv_fast(nn.Module):
 
         self.out_channels = out_channels
         self.kernel_size = kernel_size
-        self.trainable   = trainable:
+        self.trainable   = trainable
         # Forcing the filters to be odd (i.e, perfectly symmetrics)
         if kernel_size%2==0:
             self.kernel_size=self.kernel_size+1
@@ -285,7 +272,7 @@ class RawNet(nn.Module):
 			out_channels = d_args['filts'][0],
 			kernel_size = d_args['first_conv'])
         self.first_bn = nn.BatchNorm1d(num_features = d_args['filts'][0])
-        self.selu_keras = nn.SELU(inplace=True) 
+        self.selu = nn.SELU(inplace=True) 
         self.block0 = nn.Sequential(Residual_block(nb_filts = d_args['filts'][1], first = True))
         self.block1 = nn.Sequential(Residual_block(nb_filts = d_args['filts'][1]))
         self.block2 = nn.Sequential(Residual_block(nb_filts = d_args['filts'][2]))
@@ -335,7 +322,7 @@ class RawNet(nn.Module):
         x = self.conv_time(x)    # Fixed sinc filters convolution
         x = F.max_pool1d(torch.abs(x), 3)
         x = self.first_bn(x)
-        x =  self.selu_keras(x)
+        x =  self.selu(x)
         
         x0 = self.block0(x)
         y0 = self.avgpool(x0).view(x0.size(0), -1) # torch.Size([batch, filter])
@@ -375,7 +362,7 @@ class RawNet(nn.Module):
         x = x5 * y5 + y5 # (batch, filter, time) x (batch, filter, 1)
 
         x = self.bn_before_gru(x)
-        x = self.selu_keras(x)
+        x = self.selu(x)
         x = x.permute(0, 2, 1)     #(batch, filt, time) >> (batch, time, filt)
         self.gru.flatten_parameters()
         x, _ = self.gru(x)
