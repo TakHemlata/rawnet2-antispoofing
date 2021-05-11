@@ -11,56 +11,6 @@ import pickle
 import random
 
 
-
-
-class CONV(nn.Module):
-    def __init__(self, out_channels, kernel_size,device, sample_rate=16000, in_channels=1,
-                 stride=1, padding=0, dilation=1, bias=False, groups=1):
-        super(CONV,self).__init__()
-        if in_channels != 1:
-            
-            msg = "SincConv only support one input channel (here, in_channels = {%i})" % (in_channels)
-            raise ValueError(msg)
-
-        self.out_channels = out_channels
-        self.kernel_size = kernel_size
-        
-        # Forcing the filters to be odd (i.e, perfectly symmetrics)
-        if kernel_size%2==0:
-            self.kernel_size=self.kernel_size+1
-            
-        self.stride = stride
-        self.padding = padding
-        self.dilation = dilation
-
-        if bias:
-            raise ValueError('SincConv does not support bias.')
-        if groups > 1:
-            raise ValueError('SincConv does not support groups.')
-        self.device=device
-        
-        
-        '''Sinc filters initialize (fixed (not learnable) cut-off frequencies) '''
-
-        with open('Fixed_Sinc_filters_weight/Sinc_filters_mel.pkl', 'rb') as fin :
-           y = pickle.load(fin)
-        self.y=y
-        
-
-    def forward(self,x):
-        
-        band_pass=torch.from_numpy(self.y).float().to(self.device)
-   
-        
-        self.filters = (band_pass).view(self.out_channels, 1, self.kernel_size)
-        
-        return F.conv1d(x, self.filters, stride=self.stride,
-                        padding=self.padding, dilation=self.dilation,
-                         bias=None, groups=1)
-
-
-'''In this paper we didn't use SincConv_fast() function. We used CONV() function to extract sinc filters. If you want to use SincConv_fast() without learning cut-off frequencies then remove gradient computation for both "self.low_hz_" and "self.band_hz_" to make it fixed.'''
-
 class SincConv_fast(nn.Module):
     """Sinc-based convolution
     Parameters
@@ -92,7 +42,7 @@ class SincConv_fast(nn.Module):
         return 700 * (10 ** (mel / 2595) - 1)
 
     def __init__(self, out_channels, kernel_size, sample_rate=16000, in_channels=1,
-                 stride=1, padding=0, dilation=1, bias=False, groups=1, min_low_hz=50, min_band_hz=50,trainable=False):
+                 stride=1, padding=0, dilation=1, bias=False, groups=1, min_low_hz=0, min_band_hz=0,trainable=False):
 
         super(SincConv_fast,self).__init__()
 
@@ -104,7 +54,7 @@ class SincConv_fast(nn.Module):
 
         self.out_channels = out_channels
         self.kernel_size = kernel_size
-        self.trainable   = trainable
+        
         # Forcing the filters to be odd (i.e, perfectly symmetrics)
         if kernel_size%2==0:
             self.kernel_size=self.kernel_size+1
@@ -112,6 +62,7 @@ class SincConv_fast(nn.Module):
         self.stride = stride
         self.padding = padding
         self.dilation = dilation
+        self.trainable = trainable
 
         if bias:
             raise ValueError('SincConv does not support bias.')
@@ -123,33 +74,34 @@ class SincConv_fast(nn.Module):
         self.min_band_hz = min_band_hz
 
         # initialize filterbanks such that they are equally spaced in Mel scale
-        low_hz = 30
-        high_hz =self.sample_rate / 2 - (self.min_low_hz + self.min_band_hz)
+        low_hz = 0
+        high_hz =self.sample_rate/2
 
         mel = np.linspace(self.to_mel(low_hz),
                           self.to_mel(high_hz),
-                          self.out_channels + 1)
+                          self.out_channels + 2)
         hz = self.to_hz(mel)
 
+        # Normalized frequenices 
+        hz= hz /(self.sample_rate/2)
+
         
-        # Sinc filter frequency make it fixed/ learnable based on  self.trainable argument
         if self.trainable==True:
             # filter lower frequency (out_channels, 1)
-            self.low_hz_ = nn.Parameter(torch.Tensor(hz[:-1]).view(-1, 1),requires_grad=True)
+            self.low_hz_ = nn.Parameter(torch.Tensor(hz[:-2]).view(-1, 1),requires_grad=True)
             # filter frequency band (out_channels, 1)
-            self.band_hz_ = nn.Parameter(torch.Tensor(np.diff(hz)).view(-1, 1),requires_grad=True)
+            self.band_hz_ = nn.Parameter(torch.Tensor(np.diff(hz[:-1])).view(-1, 1),requires_grad=True)
         else:
             # filter lower frequency (out_channels, 1)
-            self.low_hz_ = nn.Parameter(torch.Tensor(hz[:-1]).view(-1, 1),requires_grad=False)
+            self.low_hz_ = nn.Parameter(torch.Tensor(hz[:-2]).view(-1, 1),requires_grad=False)
             # filter frequency band (out_channels, 1)
-            self.band_hz_ = nn.Parameter(torch.Tensor(np.diff(hz)).view(-1, 1),requires_grad=False)
-
+            self.band_hz_ = nn.Parameter(torch.Tensor(np.diff(hz[:-1])).view(-1, 1),requires_grad=False)
 
         # Hamming window
-        #self.window_ = torch.hamming_window(self.kernel_size)
+        
         n_lin=torch.linspace(0, (self.kernel_size/2)-1, steps=int((self.kernel_size/2))) # computing only half of the window
-        #self.window_=0.54-0.46*torch.cos(2*math.pi*n_lin/self.kernel_size);
-        self.window_=0.5-0.5*torch.cos(2*math.pi*n_lin/self.kernel_size);
+        self.window_=0.54-0.46*torch.cos(2*math.pi*n_lin/self.kernel_size);
+       
 
         # (1, kernel_size/2)
         n = (self.kernel_size - 1) / 2.0
@@ -168,32 +120,40 @@ class SincConv_fast(nn.Module):
         """
 
         self.n_ = self.n_.to(waveforms.device)
-
+        
         self.window_ = self.window_.to(waveforms.device)
-
+        
         low = self.min_low_hz  + torch.abs(self.low_hz_)
         
         high = torch.clamp(low + self.min_band_hz + torch.abs(self.band_hz_),self.min_low_hz,self.sample_rate/2)
+        
         band=(high-low)[:,0]
         
         f_times_t_low = torch.matmul(low, self.n_)
+        
         f_times_t_high = torch.matmul(high, self.n_)
+        
 
         band_pass_left=((torch.sin(f_times_t_high)-torch.sin(f_times_t_low))/(self.n_/2))*self.window_ # Equivalent of Eq.4 of the reference paper (SPEAKER RECOGNITION FROM RAW WAVEFORM WITH SINCNET). I just have expanded the sinc and simplified the terms. This way I avoid several useless computations. 
+        
         band_pass_center = 2*band.view(-1,1)
+        
         band_pass_right= torch.flip(band_pass_left,dims=[1])
         
         
         band_pass=torch.cat([band_pass_left,band_pass_center,band_pass_right],dim=1)
-
+        
         
         band_pass = band_pass / (2*band[:,None])
         
         self.filters = (band_pass).view(
-            self.out_channels, 1, self.kernel_size)
+            band_pass.shape[0], 1, self.kernel_size)
+
+        # perform convolution between sinc bandpass filter and audio waveform
         F1=(F.conv1d(waveforms, self.filters, stride=self.stride,
                         padding=self.padding, dilation=self.dilation,
                          bias=None, groups=1))
+        
         return F1
 
 

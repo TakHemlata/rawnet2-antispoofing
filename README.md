@@ -45,7 +45,7 @@ python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --mod
 To evaluate a pre-trained RawNet2 on LA evaluation dataset:
 
 ```
-python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --model_path='/pre_trained_models/S1_system_model.pth' --eval_output='Eval_CM_scores_file_for_pre_trained_model.txt'
+python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --model_path='/pre_trained_model/Best_model.pth' --eval_output='Eval_CM_scores_file_for_pre_trained_model.txt'
 ```
 
 To compute scores on development dataset:
@@ -54,10 +54,6 @@ To compute scores on development dataset:
 python Main_training_script.py --track=logical --loss=CCE --eval --model_path='S1_system_model.pth' --eval_output='Dev_CM_scores_file.txt'
 ```
 
-Pre_trained weights are available in 'pre_trained_models/'  directory.
-1. S1_system_model: fixed Mel-scaled sinc filters
-2. S2_system_model: fixed inverse-mel-scaled sinc filters
-3. S3_system_model: fixed linear-scaled sinc filters
 
 Compute the min t-DCF and EER(%) on evaluation dataset
 
@@ -65,10 +61,7 @@ Compute the min t-DCF and EER(%) on evaluation dataset
 python evaluate_tDCF_asvspoof19_eval_LA.py 
 ``` 
 
-## Fusion
-Fusion experiments performed using the "Support Vector Machine (SVM)"  based fusion approach. We trained SVM on development scores of all three RawNet2 systems with high-spectral resolution LFCC-GMM baseline system (https://www.isca-speech.org/archive/Interspeech_2020/pdfs/1844.pdf) and tested on evaluation scores of all the systems.
 
-SVM fusion script (matlab) is available in 'SVM_fusion/' directory with development and evaluation scores and coressponding labels of all countermeasure systems in 'S_dev.mat' and 'S_eval.mat' respectively.
 
 ## Contact
 For any query, please contact:
