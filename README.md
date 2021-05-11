@@ -51,7 +51,7 @@ python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --mod
 To compute scores on development dataset:
 
 ```
-python Main_training_script.py --track=logical --loss=CCE --eval --model_path='S1_system_model.pth' --eval_output='Dev_CM_scores_file.txt'
+python Main_training_script.py --track=logical --loss=CCE --eval --model_path='path/to/your/best_model.pth' --eval_output='Dev_CM_scores_file.txt'
 ```
 
 
