@@ -45,9 +45,14 @@ If you would like to compute scores on development dataset simply run:
 ```
 python Main_training_script.py --track=logical --loss=CCE --eval --model_path='/path/to/your/best_model.pth' --eval_output='dev_CM_scores_file.txt'
 ```
+Compute the min t-DCF and EER(%) on development dataset
+```
+python tDCF_python_v2\evaluate_tDCF_asvspoof19_eval_LA.py  dev  'dev_CM_scores_file.txt'
+``` 
+
 Compute the min t-DCF and EER(%) on evaluation dataset
 ```
-python tDCF_python_v2\evaluate_tDCF_asvspoof19_eval_LA.py 
+python tDCF_python_v2\evaluate_tDCF_asvspoof19_eval_LA.py  Eval  'eval_CM_scores_file.txt'
 ``` 
 ## Contact
 For any query regarding this repository, please contact:

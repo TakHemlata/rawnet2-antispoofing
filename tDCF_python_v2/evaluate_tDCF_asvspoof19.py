@@ -29,10 +29,11 @@ def evaluate_tDCF_asvspoof19(cm_score_file, asv_score_file, legacy):
         }
 
     # Load organizers' ASV scores
+    
     asv_data = np.genfromtxt(asv_score_file, dtype=str)
     asv_sources = asv_data[:, 0]
-    asv_keys = asv_data[:, 4]
-    asv_scores = asv_data[:, 5].astype(np.float)
+    asv_keys = asv_data[:, 1]
+    asv_scores = asv_data[:, 2].astype(np.float)
 
     # Load CM scores
     cm_data = np.genfromtxt(cm_score_file, dtype=str)
