@@ -60,7 +60,7 @@ def evaluate_accuracy(data_loader, model, device):
 
 
 def produce_evaluation_file(dataset, model, device, save_path):
-    data_loader = DataLoader(dataset, batch_size=8, shuffle=False)
+    data_loader = DataLoader(dataset, batch_size=1, shuffle=False)
     num_correct = 0.0
     num_total = 0.0
     model.eval()
@@ -150,7 +150,7 @@ if __name__ == '__main__':
                         help='Comment to describe the saved mdoel')
     parser.add_argument('--track', type=str, default='logical')
     parser.add_argument('--features', type=str, default='Raw_audio')
-    parser.add_argument('--is_eval', action='store_true', default=False)
+    parser.add_argument('--is_eval', action='store_true', default=False,help='eval database')
     parser.add_argument('--eval_part', type=int, default=0)
     parser.add_argument('--loss', type=str, default='CCE')
     
@@ -202,9 +202,9 @@ if __name__ == '__main__':
     
     # Model Initialization
     if bool(parser1['mg']):
-            model_1gpu = RawNet(parser1['model'], device)
-            nb_params = sum([param.view(-1).size()[0] for param in model_1gpu.parameters()])
-            model =(model_1gpu).to(device)
+            model = RawNet(parser1['model'], device)
+            nb_params = sum([param.view(-1).size()[0] for param in model.parameters()])
+            model =(model).to(device)
     else:
         model = RawNet(parser1['model'], device).to(device)
         nb_params = sum([param.view(-1).size()[0] for param in model.parameters()])

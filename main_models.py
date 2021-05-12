@@ -52,7 +52,7 @@ class SincConv_fast(nn.Module):
             msg = "SincConv only support one input channel (here, in_channels = {%i})" % (in_channels)
             raise ValueError(msg)
 
-        self.out_channels = out_channels
+        self.out_channels = out_channels+1
         self.kernel_size = kernel_size
         
         # Forcing the filters to be odd (i.e, perfectly symmetrics)
@@ -75,27 +75,27 @@ class SincConv_fast(nn.Module):
 
         # initialize filterbanks such that they are equally spaced in Mel scale
         low_hz = 0
-        high_hz =self.sample_rate/2
+        high_hz =self.sample_rate / 2 
 
         mel = np.linspace(self.to_mel(low_hz),
                           self.to_mel(high_hz),
                           self.out_channels + 2)
         hz = self.to_hz(mel)
+        hz=hz[1:-1]
 
-        # Normalized frequenices 
-        hz= hz /(self.sample_rate/2)
+        
 
         
         if self.trainable==True:
             # filter lower frequency (out_channels, 1)
-            self.low_hz_ = nn.Parameter(torch.Tensor(hz[:-2]).view(-1, 1),requires_grad=True)
+            self.low_hz_ = nn.Parameter(torch.Tensor(hz[:-1]).view(-1, 1),requires_grad=True)
             # filter frequency band (out_channels, 1)
-            self.band_hz_ = nn.Parameter(torch.Tensor(np.diff(hz[:-1])).view(-1, 1),requires_grad=True)
+            self.band_hz_ = nn.Parameter(torch.Tensor(np.diff(hz)).view(-1, 1),requires_grad=True)
         else:
             # filter lower frequency (out_channels, 1)
-            self.low_hz_ = nn.Parameter(torch.Tensor(hz[:-2]).view(-1, 1),requires_grad=False)
+            self.low_hz_ = nn.Parameter(torch.Tensor(hz[:-1]).view(-1, 1),requires_grad=False)
             # filter frequency band (out_channels, 1)
-            self.band_hz_ = nn.Parameter(torch.Tensor(np.diff(hz[:-1])).view(-1, 1),requires_grad=False)
+            self.band_hz_ = nn.Parameter(torch.Tensor(np.diff(hz)).view(-1, 1),requires_grad=False)
 
         # Hamming window
         
@@ -166,7 +166,7 @@ class Residual_block(nn.Module):
         if not self.first:
             self.bn1 = nn.BatchNorm1d(num_features = nb_filts[0])
         
-        self.lrelu_keras = nn.LeakyReLU(negative_slope=0.3)
+        self.lrelu = nn.LeakyReLU(negative_slope=0.3)
         
         self.conv1 = nn.Conv1d(in_channels = nb_filts[0],
 			out_channels = nb_filts[1],
@@ -197,13 +197,13 @@ class Residual_block(nn.Module):
         identity = x
         if not self.first:
             out = self.bn1(x)
-            out = self.lrelu_keras(out)
+            out = self.lrelu(out)
         else:
             out = x
             
         out = self.conv1(x)
         out = self.bn2(out)
-        out = self.lrelu_keras(out)
+        out = self.lrelu(out)
         out = self.conv2(out)
         
         if self.downsample:
@@ -232,7 +232,7 @@ class RawNet(nn.Module):
 			out_channels = d_args['filts'][0],
 			kernel_size = d_args['first_conv'])
         self.first_bn = nn.BatchNorm1d(num_features = d_args['filts'][0])
-        self.selu = nn.SELU(inplace=True) 
+        self.lrelu = nn.LeakyReLU(negative_slope=0.3)
         self.block0 = nn.Sequential(Residual_block(nb_filts = d_args['filts'][1], first = True))
         self.block1 = nn.Sequential(Residual_block(nb_filts = d_args['filts'][1]))
         self.block2 = nn.Sequential(Residual_block(nb_filts = d_args['filts'][2]))
@@ -282,7 +282,7 @@ class RawNet(nn.Module):
         x = self.conv_time(x)    # Fixed sinc filters convolution
         x = F.max_pool1d(torch.abs(x), 3)
         x = self.first_bn(x)
-        x =  self.selu(x)
+        x =  self.lrelu(x)
         
         x0 = self.block0(x)
         y0 = self.avgpool(x0).view(x0.size(0), -1) # torch.Size([batch, filter])
@@ -322,7 +322,7 @@ class RawNet(nn.Module):
         x = x5 * y5 + y5 # (batch, filter, time) x (batch, filter, 1)
 
         x = self.bn_before_gru(x)
-        x = self.selu(x)
+        x = self.lrelu(x)
         x = x.permute(0, 2, 1)     #(batch, filt, time) >> (batch, time, filt)
         self.gru.flatten_parameters()
         x, _ = self.gru(x)
