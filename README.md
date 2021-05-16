@@ -47,12 +47,12 @@ python Main_training_script.py --track=logical --loss=CCE --eval --model_path='/
 ```
 Compute the min t-DCF and EER(%) on development dataset
 ```
-python tDCF_python_v2\evaluate_tDCF_asvspoof19_eval_LA.py  dev  'dev_CM_scores_file.txt'
+python tDCF_python/evaluate_tDCF_asvspoof19_eval_LA.py  dev  'dev_CM_scores_file.txt'
 ``` 
 
 Compute the min t-DCF and EER(%) on evaluation dataset
 ```
-python tDCF_python_v2\evaluate_tDCF_asvspoof19_eval_LA.py  Eval  'eval_CM_scores_file.txt'
+python tDCF_python/evaluate_tDCF_asvspoof19_eval_LA.py  Eval  'eval_CM_scores_file.txt'
 ``` 
 ## Contact
 For any query regarding this repository, please contact:
@@ -60,10 +60,12 @@ For any query regarding this repository, please contact:
 ## Citation
 If you use this code in your research please use the following citation:
 ```bibtex
-@article{tak2020end,
-  title={End-to-end anti-spoofing with RawNet2},
+@INPROCEEDINGS{9414234,
   author={Tak, Hemlata and Patino, Jose and Todisco, Massimiliano and Nautsch, Andreas and Evans, Nicholas and Larcher, Anthony},
-  journal={arXiv preprint arXiv:2011.01108},
-  year={2020}
+  booktitle={IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)}, 
+  title={End-to-End anti-spoofing with RawNet2}, 
+  year={2021},
+  pages={6369-6373}
 }
+
 ```
