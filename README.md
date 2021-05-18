@@ -24,7 +24,7 @@ Our experiments are done in the logical access (LA) partition of the ASVspoof 20
 ### Training
 To train the model run:
 ```
-python Main_training_script.py --track=logical --loss=CCE   --lr=0.0001 --batch_size=32
+python main.py --track=logical --loss=CCE   --lr=0.0001 --batch_size=32
 ```
 
 ### Testing
@@ -32,18 +32,18 @@ python Main_training_script.py --track=logical --loss=CCE   --lr=0.0001 --batch_
 To evaluate your own model on LA evaluation dataset:
 
 ```
-python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --model_path='/path/to/your/best_model.pth' --eval_output='eval_CM_scores_file.txt'
+python main.py --track=logical --loss=CCE --is_eval --eval --model_path='/path/to/your/best_model.pth' --eval_output='eval_CM_scores_file.txt'
 ```
 
 We also provide a pre-trained model which follows a Mel-scale distribution of the sinc filters at the input layer. To use it you can run: 
 ```
-python Main_training_script.py --track=logical --loss=CCE --is_eval --eval --model_path='pre_trained_model/best_model.pth' --eval_output='RawNet2_LA_eval_CM_scores.txt'
+python main.py --track=logical --loss=CCE --is_eval --eval --model_path='pre_trained_model/best_model.pth' --eval_output='RawNet2_LA_eval_CM_scores.txt'
 ```
 
 If you would like to compute scores on development dataset simply run:
 
 ```
-python Main_training_script.py --track=logical --loss=CCE --eval --model_path='/path/to/your/best_model.pth' --eval_output='dev_CM_scores_file.txt'
+python main.py --track=logical --loss=CCE --eval --model_path='/path/to/your/best_model.pth' --eval_output='dev_CM_scores_file.txt'
 ```
 Compute the min t-DCF and EER(%) on development dataset
 ```
