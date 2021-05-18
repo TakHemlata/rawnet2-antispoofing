@@ -9,7 +9,7 @@ from torchvision import transforms
 import yaml
 import torch
 from torch import nn
-from main_models import RawNet
+from model import RawNet
 from tensorboardX import SummaryWriter
 
 

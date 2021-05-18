@@ -62,7 +62,7 @@ class SincConv(nn.Module):
         filbandwidthsmel=np.linspace(fmelmin,fmelmax,self.out_channels+2)
         # Mel to Hz conversion
         filbandwidthsf=self.to_hz(filbandwidthsmel)
-        self.mel=filbandwidthsf[:-2]
+        self.mel=filbandwidthsf[:self.out_channels]
         self.hsupp=torch.arange(-(self.kernel_size-1)/2, (self.kernel_size-1)/2+1)
         self.band_pass=torch.zeros(self.out_channels-1,self.kernel_size)
     
