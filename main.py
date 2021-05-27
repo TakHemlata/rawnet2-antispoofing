@@ -60,7 +60,7 @@ def evaluate_accuracy(data_loader, model, device):
 
 
 def produce_evaluation_file(dataset, model, device, save_path):
-    data_loader = DataLoader(dataset, batch_size=1, shuffle=False)
+    data_loader = DataLoader(dataset, batch_size=8, shuffle=False)
     num_correct = 0.0
     num_total = 0.0
     model.eval()
@@ -138,7 +138,7 @@ if __name__ == '__main__':
     parser.add_argument('--model_path', type=str,
                         default=None, help='Model checkpoint')
    
-    parser.add_argument('--database_path', type=str, default='/your/path/to/data/ASVspoof2019/LA/', help='change this to user\'s full directory address of LA database')
+    parser.add_argument('--database_path', type=str, default='/your/path/to/data/ASVspoof_database/', help='change this to user\'s full directory address of LA database)
     parser.add_argument('--protocols_path', type=str, default='database/ASVspoof2019_LA_cm_protocols/', help='Change with path to user\'s LA database protocols directory address')
     parser.add_argument('--eval_output', type=str, default=None,
                         help='Path to save the evaluation result')
@@ -150,16 +150,22 @@ if __name__ == '__main__':
                         help='Comment to describe the saved mdoel')
     parser.add_argument('--track', type=str, default='logical')
     parser.add_argument('--features', type=str, default='Raw_audio')
-    parser.add_argument('--is_eval', action='store_true', default=False,help='eval database')
+    parser.add_argument('--is_eval', action='store_true', default=False)
     parser.add_argument('--eval_part', type=int, default=0)
     parser.add_argument('--loss', type=str, default='CCE')
     
 
-    dir_yaml = os.path.splitext('train_RawNet')[0] + '.yaml'
+    dir_yaml = os.path.splitext('model_config_RawNet2')[0] + '.yaml'
 
     with open(dir_yaml, 'r') as f_yaml:
             parser1 = yaml.load(f_yaml)
+
+    # random seed
     np.random.seed(parser1['seed'])
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+
     if not os.path.exists('models'):
         os.mkdir('models')
     args = parser.parse_args()
@@ -187,7 +193,6 @@ if __name__ == '__main__':
     ])
 
     # GPU device
-    #device = torch.device('cuda',1) if torch.cuda.is_available() else 'cpu'   # cuda-1
     device = 'cuda' if torch.cuda.is_available() else 'cpu'                  # cuda-0
     
     
@@ -202,9 +207,9 @@ if __name__ == '__main__':
     
     # Model Initialization
     if bool(parser1['mg']):
-            model = RawNet(parser1['model'], device)
-            nb_params = sum([param.view(-1).size()[0] for param in model.parameters()])
-            model =(model).to(device)
+            model_1gpu = RawNet(parser1['model'], device)
+            nb_params = sum([param.view(-1).size()[0] for param in model_1gpu.parameters()])
+            model =(model_1gpu).to(device)
     else:
         model = RawNet(parser1['model'], device).to(device)
         nb_params = sum([param.view(-1).size()[0] for param in model.parameters()])
@@ -212,7 +217,7 @@ if __name__ == '__main__':
 
     # Adam optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr,weight_decay=args.weight_decay)
-    print('nb_params: {}'.format(nb_params))
+    
     
     if args.model_path:
         model.load_state_dict(torch.load(args.model_path,map_location=device))

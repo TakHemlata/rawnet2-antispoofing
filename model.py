@@ -23,7 +23,7 @@ class SincConv(nn.Module):
 
 
     def __init__(self, device,out_channels, kernel_size,in_channels=1,sample_rate=16000,
-                 stride=1, padding=0, dilation=1, bias=False, groups=1):
+                 stride=1, padding=0, dilation=1, bias=False, groups=1,freq_scale='Mel'):
 
         super(SincConv,self).__init__()
 
@@ -55,23 +55,41 @@ class SincConv(nn.Module):
         # initialize filterbanks using Mel scale
         NFFT = 512
         f=int(self.sample_rate/2)*np.linspace(0,1,int(NFFT/2)+1)
-        # Hz to mel conversion
-        fmel=self.to_mel(f)
-        fmelmax=np.max(fmel)
-        fmelmin=np.min(fmel)
-        filbandwidthsmel=np.linspace(fmelmin,fmelmax,self.out_channels+2)
-        # Mel to Hz conversion
-        filbandwidthsf=self.to_hz(filbandwidthsmel)
-        self.mel=filbandwidthsf[:self.out_channels]
+
+
+        if freq_scale == 'Mel':
+            fmel=self.to_mel(f) # Hz to mel conversion
+            fmelmax=np.max(fmel)
+            fmelmin=np.min(fmel)
+            filbandwidthsmel=np.linspace(fmelmin,fmelmax,self.out_channels+2)
+            filbandwidthsf=self.to_hz(filbandwidthsmel) # Mel to Hz conversion
+            self.Freq=filbandwidthsf[:self.out_channels]
+
+        elif freq_scale == 'Inverse-mel':
+            fmel=self.to_mel(f) # Hz to mel conversion
+            fmelmax=np.max(fmel)
+            fmelmin=np.min(fmel)
+            filbandwidthsmel=np.linspace(fmelmin,fmelmax,self.out_channels+2)
+            filbandwidthsf=self.to_hz(filbandwidthsmel) # Mel to Hz conversion
+            self.mel=filbandwidthsf[:self.out_channels]
+            self.Freq=np.abs(np.flip(self.mel)-1) ## invert mel scale
+
+        ''' otherwise linear scale'''
+        else:
+            fmelmax=np.max(f)
+            fmelmin=np.min(f)
+            filbandwidthsmel=np.linspace(fmelmin,fmelmax,self.out_channels+2)
+            self.Freq=filbandwidthsmel[:self.out_channels]
+        
         self.hsupp=torch.arange(-(self.kernel_size-1)/2, (self.kernel_size-1)/2+1)
         self.band_pass=torch.zeros(self.out_channels-1,self.kernel_size)
     
        
         
     def forward(self,x):
-        for i in range(len(self.mel)-1):
-            fmin=self.mel[i]
-            fmax=self.mel[i+1]
+        for i in range(len(self.Freq)-1):
+            fmin=self.Freq[i]
+            fmax=self.Freq[i+1]
             hHigh=(2*fmax/self.sample_rate)*np.sinc(2*fmax*self.hsupp/self.sample_rate)
             hLow=(2*fmin/self.sample_rate)*np.sinc(2*fmin*self.hsupp/self.sample_rate)
             hideal=hHigh-hLow
@@ -157,7 +175,7 @@ class RawNet(nn.Module):
         self.Sinc_conv=SincConv(device=self.device,
 			out_channels = d_args['filts'][0],
 			kernel_size = d_args['first_conv'],
-                        in_channels = d_args['in_channels']
+                        in_channels = d_args['in_channels'],freq_scale='Mel'
         )
         
         self.first_bn = nn.BatchNorm1d(num_features = d_args['filts'][0])

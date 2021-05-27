@@ -7,12 +7,12 @@ args = sys.argv
 
 if 'dev'==args[1]:
     
-    ASV_SCOREFILE = '/tDCF_python/ASV_scores/ASVspoof2019.LA.asv.dev.gi.trl.scores.txt'
+    ASV_SCOREFILE = '/tDCF_python/ASV_scores/ASVspoof2019.LA.asv.dev.gi.trl.scores.txt''
     CM_SCOREFILE = args[2]
     
      
 elif 'Eval'==args[1]:
-    ASV_SCOREFILE = '/tDCF_python/ASV_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt'
+    ASV_SCOREFILE = '/tDCF_python/ASV_scores/ASVspoof2019.LA.asv.eval.gi.trl.scores.txt''
     CM_SCOREFILE = args[2]
      
 

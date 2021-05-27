@@ -16,10 +16,9 @@ class ASVDataset(Dataset):
         is_train=True, sample_size=None, 
         is_logical=True, feature_name=None, is_eval=False,
         eval_part=0):
-        
+
         track = 'LA'   
-        data_root=protocols_path     
-           
+        data_root=protocols_path      
         assert feature_name is not None, 'must provide feature name'
         self.track = track
         self.is_logical = is_logical
