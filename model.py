@@ -63,7 +63,7 @@ class SincConv(nn.Module):
             fmelmin=np.min(fmel)
             filbandwidthsmel=np.linspace(fmelmin,fmelmax,self.out_channels+2)
             filbandwidthsf=self.to_hz(filbandwidthsmel) # Mel to Hz conversion
-            self.Freq=filbandwidthsf[:self.out_channels]
+            self.freq=filbandwidthsf[:self.out_channels]
 
         elif freq_scale == 'Inverse-mel':
             fmel=self.to_mel(f) # Hz to mel conversion
@@ -72,14 +72,14 @@ class SincConv(nn.Module):
             filbandwidthsmel=np.linspace(fmelmin,fmelmax,self.out_channels+2)
             filbandwidthsf=self.to_hz(filbandwidthsmel) # Mel to Hz conversion
             self.mel=filbandwidthsf[:self.out_channels]
-            self.Freq=np.abs(np.flip(self.mel)-1) ## invert mel scale
+            self.freq=np.abs(np.flip(self.mel)-1) ## invert mel scale
 
         ''' otherwise linear scale'''
         else:
             fmelmax=np.max(f)
             fmelmin=np.min(f)
             filbandwidthsmel=np.linspace(fmelmin,fmelmax,self.out_channels+2)
-            self.Freq=filbandwidthsmel[:self.out_channels]
+            self.freq=filbandwidthsmel[:self.out_channels]
         
         self.hsupp=torch.arange(-(self.kernel_size-1)/2, (self.kernel_size-1)/2+1)
         self.band_pass=torch.zeros(self.out_channels-1,self.kernel_size)
@@ -87,9 +87,9 @@ class SincConv(nn.Module):
        
         
     def forward(self,x):
-        for i in range(len(self.Freq)-1):
-            fmin=self.Freq[i]
-            fmax=self.Freq[i+1]
+        for i in range(len(self.freq)-1):
+            fmin=self.freq[i]
+            fmax=self.freq[i+1]
             hHigh=(2*fmax/self.sample_rate)*np.sinc(2*fmax*self.hsupp/self.sample_rate)
             hLow=(2*fmin/self.sample_rate)*np.sinc(2*fmin*self.hsupp/self.sample_rate)
             hideal=hHigh-hLow

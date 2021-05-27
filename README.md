@@ -42,7 +42,7 @@ If you would like to compute scores on the development set of ASVspoof 2019 simp
 ```
 python main.py --track=logical --loss=CCE --eval --model_path='/path/to/your/best_model.pth' --eval_output='dev_CM_scores.txt'
 ```
-```
+
 
 To compute scores on development dataset:
 
