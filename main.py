@@ -152,7 +152,7 @@ if __name__ == '__main__':
     parser.add_argument('--features', type=str, default='Raw_audio')
     parser.add_argument('--is_eval', action='store_true', default=False)
     parser.add_argument('--eval_part', type=int, default=0)
-    parser.add_argument('--loss', type=str, default='CCE')
+    parser.add_argument('--loss', type=str, default='weighted_CCE')
     
 
     dir_yaml = os.path.splitext('model_config_RawNet2')[0] + '.yaml'
@@ -160,7 +160,7 @@ if __name__ == '__main__':
     with open(dir_yaml, 'r') as f_yaml:
             parser1 = yaml.load(f_yaml)
 
-    # random seed
+    
     np.random.seed(parser1['seed'])
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False

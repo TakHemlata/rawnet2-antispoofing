@@ -74,7 +74,7 @@ class SincConv(nn.Module):
             self.mel=filbandwidthsf[:self.out_channels]
             self.freq=np.abs(np.flip(self.mel)-1) ## invert mel scale
 
-        ''' otherwise linear scale'''
+        
         else:
             fmelmax=np.max(f)
             fmelmin=np.min(f)
@@ -179,7 +179,7 @@ class RawNet(nn.Module):
         )
         
         self.first_bn = nn.BatchNorm1d(num_features = d_args['filts'][0])
-        self.selu = nn.SELU(inplace=True)
+        self.lrelu = nn.SELU(inplace=True)
         self.block0 = nn.Sequential(Residual_block(nb_filts = d_args['filts'][1], first = True))
         self.block1 = nn.Sequential(Residual_block(nb_filts = d_args['filts'][1]))
         self.block2 = nn.Sequential(Residual_block(nb_filts = d_args['filts'][2]))
@@ -229,7 +229,7 @@ class RawNet(nn.Module):
         x = self.Sinc_conv(x)    # Fixed sinc filters convolution
         x = F.max_pool1d(torch.abs(x), 3)
         x = self.first_bn(x)
-        x =  self.selu(x)
+        x = self.lrelu(x)
         
         x0 = self.block0(x)
         y0 = self.avgpool(x0).view(x0.size(0), -1) # torch.Size([batch, filter])

@@ -7,9 +7,9 @@ This repository contains our implementation of the paper accepted to ICASSP 2021
 First, clone the repository locally, create and activate a conda environment, and install the requirements :
 ```
 $ git clone https://github.com/TakHemlata/RawNet_anti_spoofing.git
-$ conda create --name rawnet_anti_spoofing python=3.8.5
+$ conda create --name rawnet_anti_spoofing python=3.6.10
 $ conda activate rawnet_anti_spoofing
-$ conda install -c pytorch pytorch torchvision
+$ conda install pytorch=1.4.0 -c pytorch
 $ pip install -r requirements.txt
 ```
 

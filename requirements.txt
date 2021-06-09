@@ -1,6 +1,8 @@
 #cuda==10.1
-pyyaml==5.4.1
+numba==0.48
+numpy==1.17.0
 SoundFile
-joblib
+librosa==0.7.2
+pyyaml==5.3.1
 tensorboardX==2.1
-matplotlib==3.2.2
+matplotlib==3.0.2
